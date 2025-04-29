@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Memo (Admin) | Memo-ry</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script nonce="<%= nonce %>" src="/js/jquery-3.7.1.min.js"></script>
+  </head>
+<body>
+  <div class="navbar">
+    <a href="/">Home</a>
+    <a href="/memos">My Memos</a>
+    <a href="/create">Create Memo</a>
+    <a href="/approve">Approve Memo (Author+)</a>
+    <a class="active" href="/edit">Edit Memo (Admin)</a>
+    <a href="/profile">Profile</a>
+    <a href="/api/logout">Logout</a>
+  </div>
+
+  <div class="container">
+    <h1>Edit Memo (Admin) | Memo-ry</h1>
+    <form id="get-memo-form">
+      <h2>Get Memo</h2>
+      <label for="memo-id">Memo ID:</label>
+      <input type="text" id="memo-id" name="memo-id" required>
+      <button type="submit">Get Memo</button>
+    </form>
+
+    <div id="edit-memo-form" style="display: none;">
+      <h2>Edit Memo</h2>
+      <form>
+        <input type="hidden" id="edit-memo-id" name="edit-memo-id" required>
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+        <label for="content">Content:</label>
+        <textarea id="content" name="content" required></textarea>
+        <label for="author">Author:</label>
+        <input type="text" id="author" name="author" readonly>
+        <label for="visibility">Visibility:</label>
+        <select id="visibility" name="visibility">
+          <option value="1">Public</option>
+          <option value="0">Private</option>
+        </select>
+        <label for="status">Status:</label>
+        <select id="status" name="status" disabled>
+          <option value="1">Approved</option>
+          <option value="0">Not approved</option>
+        </select>
+        <button type="submit">Update Memo</button>
+      </form>
+    </div>
+  </div>
+
+  <script nonce="<%= nonce %>">
+    const MEMO_CSRF_TOKEN = '<%= csrfToken %>';
+    const MEMO_CSRF_ACTION = '<%= csrfAction %>';
+
+    $(document).ready(function() {
+      $('#get-memo-form').submit(function(e) {
+        e.preventDefault();
+        let memoId = $('#memo-id').val();
+        $.ajax({
+          url: `/api/memo/${memoId}`,
+          type: 'GET',
+          success: function(response) {
+            if (response.status !== 'failed') {
+              $('#memo-id').val('');
+              $('#get-memo-form').hide();
+              $('#edit-memo-form').show();
+              $('#edit-memo-form').find('#edit-memo-id').val(response.id);
+              $('#edit-memo-form').find('#title').val(response.title);
+              $('#edit-memo-form').find('#content').val(response.body);
+              $('#edit-memo-form').find('#author').val(response.username);
+              $('#edit-memo-form').find('#visibility').val(response.visibility);
+              $('#edit-memo-form').find('#status').val(response.approved);
+            } else {
+              alert(response.message);
+            }
+          },
+          error: function() {
+            alert('Failed to get memo');
+          }
+        });
+      });
+
+      $('#edit-memo-form').submit(function(e) {
+        e.preventDefault();
+        let memoId = $('#edit-memo-id').val();
+        let title = $('#title').val();
+        let content = $('#content').val();
+        let visibility = $('#visibility').val();
+        $.ajax({
+          url: `/api/memo/${memoId}`,
+          type: 'PUT',
+          data: {
+            memoTitle: title,
+            memoContent: content,
+            visibility: visibility
+          },
+          headers: {
+            'X-CSRF-Token': MEMO_CSRF_TOKEN,
+            'X-CSRF-Action': MEMO_CSRF_ACTION
+          }
+        }).done(function(response) {
+          if (response.status !== 'failed') {
+            alert('Memo updated successfully');
+            $('#edit-memo-form').hide();
+            $('#get-memo-form').show();
+            location.reload();
+          } else {
+            alert(response.message);
+            location.reload();
+          }
+        }).fail(function() {
+          alert('Failed to update memo');
+          location.reload();
+        });
+      });
+    });
+  </script>
+</body>
+</html>

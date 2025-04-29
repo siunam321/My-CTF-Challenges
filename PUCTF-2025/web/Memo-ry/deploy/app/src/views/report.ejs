@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= name %>'s Bot Page
+    </title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <script nonce="<%= nonce %>" src="/js/bootstrap.bundle.min.js"></script>
+    <% if (isTurnstileEnabled) { %>
+        <script nonce="<%= nonce %>" src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+    <% } %>
+    <style>
+        form {
+            min-width: 300px;
+            margin: 5px auto;
+        }
+
+        .loading {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body data-bs-theme="dark">
+    <div class="vh-100 container d-flex flex-column justify-content-center align-items-center">
+        <h1>
+            <%= name %>'s Bot Page
+        </h1>
+        <h2>Note: Please use domain and port <code>localhost:3000</code></h2>
+        <form id="visit-form" class="d-flex flex-column w-50">
+            <div class="mb-3">
+                <label for="url" class="form-label">Enter the approval URL:</label>
+                <input type="text" name="url" id="url" class="form-control" required>
+            </div>
+            <div class="mb-2" id="cf-turnstile"></div>
+            <input type="submit" value="Visit Approve Page" class="btn btn-primary mb-3">
+            <input type="text" id="cf-turnstile-response" name="answer" hidden>
+            <div class="text-center alert-danger alert-dismissible fade show w-100" id="error-message"></div>
+            <div class="text-center alert-success alert-dismissible fade show w-100" id="success-message"></div>
+        </form>
+    </div>
+
+    <script nonce="<%= nonce %>" src="/js/jquery.min.js"></script>
+    <script nonce="<%= nonce %>">
+        $(document).ready(function () {
+            const form = $('#visit-form');
+            const successMessage = $('#success-message');
+            const errorMessage = $('#error-message');
+            const loadingAnimation = $('<div class="loading"></div>');
+
+            form.submit(function (event) {
+                event.preventDefault();
+                const url = $('#url').val();
+                const turnstileToken = $('#cf-turnstile-response').val();
+                successMessage.slideUp()
+                errorMessage.slideUp()
+                form.append(loadingAnimation);
+                <% if (isTurnstileEnabled) { %>
+                    turnstile.reset('#cf-turnstile');
+                <% } %>
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/report',
+                    data: { url: url, 'answer': turnstileToken },
+                    success: function (data) {
+                        form.find('.loading').remove();
+                        if (data.success) {
+                            successMessage.text(data.success).addClass('alert').slideDown();
+                        } else {
+                            errorMessage.text(data.error).addClass('alert').slideDown();
+                        }
+                    },
+                    error: (jq, status) => {
+                        form.find('.loading').remove();
+                        if (response = jq.responseJSON) {
+                            errorMessage.text(response.error).addClass('alert').slideDown();
+                        } else {
+                            errorMessage.text('An error occurred while processing the request.').addClass('alert').slideDown();
+                        }
+                    },
+                });
+            });
+
+            <% if (isTurnstileEnabled) { %>
+                // CloudFlare Turnstile Captcha
+                turnstile.render('#cf-turnstile', {
+                    sitekey: '0x4AAAAAAASurCXG3cLRY-Vl',
+                    callback: function (token) {
+                        $('#cf-turnstile-response').val(token);
+                    }
+                });
+            <% } %>
+        });
+        
+    </script>
+</body>
+
+</html>

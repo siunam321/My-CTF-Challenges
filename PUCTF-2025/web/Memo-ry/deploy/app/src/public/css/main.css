@@ -1,0 +1,123 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+    color: #fff;
+}
+
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+}
+
+.navbar a {
+    float: left;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    background-color: #555;
+}
+
+.navbar a.active {
+    background-color: #007bff;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #222;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+    color: #fff;
+}
+
+p {
+    line-height: 1.6;
+}
+
+.memo {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #444;
+    border-left: 4px solid #007bff;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+        color: #fff;
+    }
+}
+
+input[type="text"],
+input[type="password"],
+input[type="submit"],
+textarea,
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+textarea {
+    height: 150px;
+}
+
+.visibility-options {
+    display: flex;
+    align-items: center;
+}
+
+input[type="radio"] {
+    margin-right: 10px;
+}
+
+input[type="submit"], button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover, button:hover {
+    background-color: #0056b3;
+}
+
+.info {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.info p {
+    margin: 5px 0;
+}
+
+form {
+    margin-top: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #ccc;
+}

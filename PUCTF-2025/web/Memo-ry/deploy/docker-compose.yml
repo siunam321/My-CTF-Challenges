@@ -1,0 +1,17 @@
+services:
+  app:
+    build: ./app/
+    restart: unless-stopped
+    environment:
+      FLAG: PUCTF25{CL1ENt_TRavEr5e_T0_ThE_fla9_paTh_2da2d7653a56788f06ad205690738a29}
+      AUTHOR_USERNAME: siunam
+      AUTHOR_PASSWORD: b526ece3922f716f8d1cdce4667196bce4b6084a54cb7e0c9945aeebfccc
+      # REMOTE_CHALLENGE_ORIGIN: http://chal.polyuctf.com:41341
+      APPNAME: Memo-ry
+      APPURL: http://localhost:3000
+      APPURLREGEX: ^http(|s)://.*$
+      APPLIMIT: 2
+      APPLIMITTIME: 60000
+      USE_PROXY: 1
+    ports:
+      - 3000:3000

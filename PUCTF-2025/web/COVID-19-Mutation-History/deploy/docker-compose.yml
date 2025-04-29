@@ -1,0 +1,37 @@
+services:
+  app.puctf25:
+    build: ./app/
+    restart: unless-stopped
+    environment:
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: bc09b540acab160d6782391f9d0ae31b33a426a6a80d4d7a4bae9d1ac50f
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: ctf
+    ports:
+      - 80:8080
+    networks:
+      - internal
+    depends_on:
+      - bot
+  bot:
+    build: ./bot/
+    restart: always
+    environment:
+      APPNAME: COVID-19 Mutation History
+      # this is a very dirty way to get the XSS bot working.
+      # if we use `http://app:8080`, Playwright (Or the Chromium browser, idk) will automatically
+      # upgrade from HTTP to HTTPS. To fix this, I changed the `app` service name into a domain-like
+      # value.
+      APPURL: http://app.puctf25:8080
+      APPURLREGEX: ^http://app\.puctf25:8080/review\.php.*$
+      APPLIMIT: 2
+      APPLIMITTIME: 60000
+      USE_PROXY: 1
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: bc09b540acab160d6782391f9d0ae31b33a426a6a80d4d7a4bae9d1ac50f
+    networks:
+      - internal
+
+networks:
+  internal:

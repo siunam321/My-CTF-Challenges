@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Memos | Memo-ry</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script nonce="<%= nonce %>" src="/js/jquery-3.7.1.min.js"></script>
+  </head>
+<body>
+  <div class="navbar">
+    <a href="/">Home</a>
+    <a class="active" href="/memos">My Memos</a>
+    <a href="/create">Create Memo</a>
+    <a href="/approve">Approve Memo (Author+)</a>
+    <a href="/edit">Edit Memo (Admin)</a>
+    <a href="/profile">Profile</a>
+    <a href="/api/logout">Logout</a>
+  </div>
+
+  <div class="container">
+    <h1>My Memos | Memo-ry</h1>
+  </div>
+
+  <script nonce="<%= nonce %>">
+    $(document).ready(function() {
+      var user = { username: localStorage.getItem('username') };
+      $.get(`/api/memos/${decodeURIComponent(user.username)}`, function(data) {
+        let memoCounter = 1;
+        data.forEach(function(memo) {
+          (memo.visibility === 1) ? memo.visibility = 'Public' : memo.visibility = 'Private';
+          (memo.approved === 1) ? memo.approved = 'Approved' : memo.approved = 'Not approved';
+
+          var memoElement = $('<div class="memo">');
+          memoElement.append($('<h3></h3>').text(`Memo #${memoCounter}`));
+          memoElement.append($('<h2></h2>').text(`${memo.title} (${memo.visibility}, ${memo.approved})`));
+          memoElement.append($('<p></p>').text(memo.body));
+          $('.container').append(memoElement);
+
+          memoCounter++;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

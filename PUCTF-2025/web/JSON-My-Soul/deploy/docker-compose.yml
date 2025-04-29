@@ -1,0 +1,19 @@
+services:
+  frontend:
+    build: ./frontend/
+    restart: unless-stopped
+    environment:
+      FLAG: PUCTF25{WH173l1S7_4Pp0R4cH_C4N_4lS0_b3_BYP4223d_33671ad267a035702f9222a37d6776c2}
+      WHITELIST_API_URL: http://api
+    ports:
+      - 80:80
+    networks:
+      - internal
+  api:
+    build: ./api/
+    restart: unless-stopped
+    networks:
+      - internal
+
+networks:
+  internal:

@@ -1,0 +1,30 @@
+name: nuttyshell_file_manager  # This must be same with the folder name, use for verify
+title: NuttyShell File Manager
+title_zh: NuttyShell 檔案管理員
+author: siunam
+online: True
+# Score can be a random integer value between 0 - 500 (multiples of 5), Fill in any integer when using dynamic scoring
+score: 500
+difficulty: Medium
+# This flag format (flag_format) is to display the "general" flag format on the challenge display from CTFd website
+flag_format: PUCTF25{[a-zA-Z0-9_]+_[a-fA-F0-9]{32}}
+flag: # Please follow below one of the structures.
+  - type: static # type is optional when using static, type can be (static/regex)
+    content: PUCTF25{wheN_bY7eCodE_Bi7e5_B4CK_8c531a651dd37d09b4b70dd619374a7b}
+    data: case_sensitive # data is optional if is flag is case sensitive, data can be (case_insensitive/case_sensitive)
+description: |
+  NuttyShell File Manager Alpha version is now released! Feel free to give it a try! (Note: Many features are still in development. Stay tuned!)
+
+  Note 1: It is highly recommended you try this challenge in a local environment first. The remote challenge instance will clean up all the files in directory `/app` periodically.
+  Note 2: When testing your payload locally, please make sure your Python version is 3.11.
+description_zh: |
+  NuttyShell File Manager Alpha 版本現已推出！歡迎試用！（註：好多功能仲整緊，敬請期待！）
+
+  注意 1：強烈建議先喺local environment 到玩呢題。個remote 題目instance 會定期清走啲喺`/app` directory 嘅files。
+  注意 2：當你喺你個local environment 到test 你個payload 嗰時，記住你個Python 版本要係3.11。
+hints: []
+
+type: nutty_dynamic
+extra:
+  template: nuttyshell_file_manager
+  load: 15

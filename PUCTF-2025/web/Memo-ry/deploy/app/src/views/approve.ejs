@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Memo (Author+) | Memo-ry</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script nonce="<%= nonce %>" src="/js/jquery-3.7.1.min.js"></script>
+    <script nonce="<%= nonce %>" src="/js/purify.min.js"></script>
+  </head>
+<body>
+  <div class="navbar">
+    <a href="/">Home</a>
+    <a href="/memos">My Memos</a>
+    <a href="/create">Create Memo</a>
+    <a class="active" href="/approve">Approve Memo (Author+)</a>
+    <a href="/edit">Edit Memo (Admin)</a>
+    <a href="/profile">Profile</a>
+    <a href="/api/logout">Logout</a>
+  </div>
+
+  <div class="container">
+    <h1>Approve Memo (Author+) | Memo-ry</h1>
+  </div>
+
+  <script nonce="<%= nonce %>">
+    const MEMO_CSRF_TOKEN = '<%= csrfToken %>';
+    const MEMO_CSRF_ACTION = '<%= csrfAction %>';
+    const DOMPURIFY_CONFIG = {
+      ALLOWED_ATTR: ['alt', 'href', 'src', 'id', 'class', 'disabled'],
+      ALLOWED_TAGS: ['h1', 'h2', 'h3', 'a', 'b', 'strong', 'i', 's', 'br'],
+      ALLOW_ARIA_ATTR: false,
+      ALLOW_DATA_ATTR: false
+    }
+
+    $(document).ready(async function() {
+      let searchParameters = new URLSearchParams(window.location.search);
+      if (searchParameters.has('notice')) {
+        let notice = searchParameters.get('notice');
+
+        let dirtyNotice = `<h3>Notice from the memo's user: ${notice}</h3>`;
+        let cleanNotice = DOMPurify.sanitize(dirtyNotice, DOMPURIFY_CONFIG);
+        $('.container').append(cleanNotice);
+      }
+
+      var data = Object.create({});
+      // TODO: implement get unapproved memos by username
+      // var user = { username: localStorage.getItem('username') };
+      if (typeof user !== 'undefined') {
+        data = await $.get(`/api/memos/${decodeURIComponent(user.username)}`);
+      } else {
+        data = await $.get('/api/unapproved-memos');
+      }
+
+      let memoCounter = 1;
+      data.forEach(memo => {
+        if (memo.approved === 1) {
+          return;
+        }
+
+        var memoElement = $('<div class="memo">');
+        memoElement.append($('<h3></h3>').text(`Memo #${memoCounter}`));
+        memoElement.append($('<h2></h2>').text(`${memo.title} - ${memo.username}`));
+        memoElement.append($('<p></p>').text(memo.body));
+
+        var approveFormElement = $('<form id="approve-memo-form"></form>');
+        approveFormElement.append($('<input type="hidden" name="id">').val(memo.id));
+        approveFormElement.append($('<input type="hidden" name="title">').val(memo.title));
+        approveFormElement.append($('<input type="submit" value="Approve">'));
+        memoElement.append(approveFormElement);
+        $('.container').append(memoElement);
+
+        memoCounter++;
+      });
+
+      $(document).on('submit', '#approve-memo-form', function(e) {
+        e.preventDefault();
+        const id = $('#approve-memo-form input[name="id"]').val();
+        const title = $('#approve-memo-form input[name="title"]').val();
+
+        // TODO: implement logging the memo's approval details. i.e.: approved by whom, when, approval reason, etc. 
+        // Currently we're sending the memo's title for a placeholder.
+        $.ajax({
+          url: `/api/memo/${id}/approve`,
+          type: 'POST',
+          data: title,
+          headers: {
+            'X-CSRF-Token': MEMO_CSRF_TOKEN,
+            'X-CSRF-Action': MEMO_CSRF_ACTION
+          },
+          success: function(response) {
+            alert(response.message);
+            location.reload();
+          },
+          error: function() {
+            alert('Failed to approve the memo');
+            location.reload();
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

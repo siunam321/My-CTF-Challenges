@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Memo-ry</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script nonce="<%= nonce %>" src="/js/jquery-3.7.1.min.js"></script>
+  </head>
+<body>
+  <div class="navbar">
+    <a class="active" href="/">Home</a>
+    <a href="/memos">My Memos</a>
+    <a href="/create">Create Memo</a>
+    <a href="/approve">Approve Memo (Author+)</a>
+    <a href="/edit">Edit Memo (Admin)</a>
+    <a href="/profile">Profile</a>
+    <a href="/api/logout">Logout</a>
+  </div>
+
+  <div class="container">
+    <h1>Home | Memo-ry</h1>
+  </div>
+
+  <script nonce="<%= nonce %>">
+    $(document).ready(function() {
+      $.get('/api/memo', function(data) {
+        let memoCounter = 1;
+        data.forEach(function(memo) {
+          var memoElement = $('<div class="memo">');
+          memoElement.append($('<h3></h3>').text(`Memo #${memoCounter}`));
+          memoElement.append($('<h2></h2>').text(`${memo.title} - ${memo.username}`));
+          memoElement.append($('<p></p>').text(memo.body));
+          $('.container').append(memoElement);
+
+          memoCounter++;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
